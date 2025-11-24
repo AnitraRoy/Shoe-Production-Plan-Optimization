@@ -1,0 +1,49 @@
+# Anitra Roy
+
+reset;
+
+###################################################
+
+############## Solve your model here ##############
+# NOTE: DO NOT TOUCH THIS PART.
+option solver gurobi;
+solve;
+
+###################################################
+#### Print the information of the solution here
+
+option gurobi_options 'mipgap=0.05 timelimit=30';
+
+
+printf '1) Optimal objective value / total profit: %.2f\n\n', profit >> 'W:\\results.out';
+
+printf '2) Optimal x-values: \n\n' >> 'W:\\results.out';
+display x >> 'W:\\results.out';
+
+#printf '3) Binding constraints are: \n\n' >> 'W:\\results.out';
+
+#if warehouse_capacity.slack == 0 then
+#	printf "Constraint maximum capacity is binding.\n" >> 'W:\\results.out';
+
+#if budget.slack == 0 then
+#	printf "Constraint budget raw material is binding.\n" >> 'W:\\results.out';
+
+#for {j in raw_material} {
+#	if runtime.slack[j] == 0 then
+#		printf "Constraint maximum duration %d %d is binding.\n", j >> 'W:\\results.out';
+#		}
+	
+#for {k in machines} {
+#	if resources.slack[k] == 0 then
+#		printf "Constraint available raw material %d is binding.\n", k >> 'W:\\results.out';
+#	}
+	
+#for {i in products} {
+#	if demand_limit.slack[i] == 0 then
+#		printf "Constraint maximum demand %d is binding. \n", i >> 'W:\\results.out';
+#	}
+
+# printf "4) Maximum capacity dual is %d.\n" ,display maximum_capacity.dual >> 'W:\\results.out'; 
+# ------ for q5) if it is 0, shadow price is 0 wich means incease/decrease in price of warehouse price/capacity does not affect the objective function value
+
+close results.out;

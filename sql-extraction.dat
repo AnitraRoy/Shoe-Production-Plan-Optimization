@@ -1,0 +1,53 @@
+# Anitra Roy
+
+###################################################
+
+table Product_Master IN "ODBC" "W:\\WARP2011W.mdb" "Product_Master": 
+	products <- [Product_Num], selling_price ~ Sales_Price; 
+read table Product_Master; 
+
+############ Read data from Machine_Master table here:
+table Machine_Master IN "ODBC" "W:\\WARP2011W.mdb" "Machine_Master": 
+	raw_material <- [Machine_Num], cost ~ OpCost_per_min; 
+read table Machine_Master; 
+
+############ Read data from RM_Master table here:
+table RM_Master IN "ODBC" "W:\\WARP2011W.mdb" "RM_Master": 
+	machines <- [RM_Num], operating_cost ~ Cost, resource_limit ~ S_Quantity; 
+read table RM_Master; 
+
+############ Read Machine_Assign data from table
+## Before reading table, we should use let command to assign zero for machines that are not being used. Here is the code:
+for {i in products, j in raw_material} {
+	let average_duration[i,j]:= 0;
+}
+
+## Now read the data fromMachine_Assign table
+table Machine_Assign IN "ODBC" "W:\\WARP2011W.mdb" "Machine_Assign": 
+	[Product_Num, Machine_Num], average_duration ~ Avg_Duration; 
+read table Machine_Assign;
+
+############# Read Warehouse_Master data from table
+table Warehouse_Master IN "ODBC" "W:\\WARP2011W.mdb" "Warehouse_Master": 
+	warehouse <- [Warehouse_Num], total_capacity ~ Op_Cost, house_capacity ~ Capacity; 
+read table Warehouse_Master;
+
+############# Read data from BOM table. *Hint: You should use a similar for loop, the one we used above, here.
+for {i in products, k in machines} {
+	let quantity[i,k]:= 0;
+}
+
+table BOM IN "ODBC" "W:\\WARP2011W.mdb" "BOM":
+	[Product_Num, RM_Num], quantity ~ Quantity; 
+read table BOM; 
+
+############# Read data from Product_Demand table here. For example, The following code reads the demand for month 1 of each year.
+table Product_Demand IN "ODBC" "W:\\WARP2011W.mdb" "SQL=SELECT * FROM Product_Demand WHERE Month=2":
+	[Product_Num, Year, Month, Store_Num], month_demand ~ Demand; 
+read table Product_Demand; 
+
+for {i in products} {
+	let demand[i] := 2 * (sum {year in years, store in stores} month_demand[i, year, 2, store]) / 7;
+}
+
+#####################################################
